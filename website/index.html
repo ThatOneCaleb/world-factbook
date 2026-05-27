@@ -754,6 +754,136 @@ a:hover { color: var(--gold-bright); }
     align-items: flex-start;
     gap: 1rem;
   }
+  .summary-table { font-size: 11px; }
+  .summary-table th, .summary-table td { padding: 8px 6px; }
+}
+
+/* ============================================
+   ASSIGNMENT SUMMARY
+   ============================================ */
+.assignment-section {
+  margin-bottom: 3.5rem;
+  animation: fadeUp 0.5s var(--ease-out) both;
+}
+
+.assignment-label {
+  font-family: var(--font-heading);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.6rem;
+}
+
+.assignment-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.assignment-desc {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+}
+
+.summary-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-surface);
+}
+
+.summary-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  white-space: nowrap;
+}
+
+.summary-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.summary-table th {
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+  font-family: var(--font-heading);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.summary-table th:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 3;
+  background: var(--bg-elevated);
+}
+
+.summary-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+}
+
+.summary-table td:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: var(--bg-surface);
+  font-family: var(--font-heading);
+  font-weight: 600;
+  color: var(--gold-bright);
+  cursor: pointer;
+}
+
+.summary-table td:first-child:hover {
+  text-decoration: underline;
+}
+
+.summary-table tr:hover td {
+  background: var(--bg-hover);
+}
+
+.summary-table tr:hover td:first-child {
+  background: var(--bg-hover);
+}
+
+.summary-table .best {
+  color: #4ade80;
+  font-weight: 500;
+}
+
+.summary-table .worst {
+  color: #f87171;
+  font-weight: 500;
+}
+
+.summary-table .na {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.territory-tag {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-muted);
+  background: rgba(255,255,255,0.04);
+  padding: 1px 5px;
+  border-radius: 3px;
+  margin-left: 6px;
+  vertical-align: middle;
 }
 </style>
 </head>
@@ -775,13 +905,205 @@ a:hover { color: var(--gold-bright); }
   <div class="hero">
     <div class="hero-label">Comprehensive Country Intelligence</div>
     <h1>The World <em>Factbook</em></h1>
-    <p class="hero-sub">Reference data on 251 countries and territories. Geography, demographics, economics, government, military, and more.</p>
+    <p class="hero-sub">Reference data on every country and territory. Geography, demographics, economics, government, military, and more.</p>
     <div class="search-wrap">
       <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <input class="search-input" id="searchInput" type="text" placeholder="Search countries..." autocomplete="off" spellcheck="false">
       <span class="search-count" id="searchCount"></span>
     </div>
   </div>
+
+  <!-- ASSIGNMENT SUMMARY -->
+  <div class="assignment-section">
+    <div class="assignment-label">AP Macro -- Standard of Living Analysis</div>
+    <div class="assignment-title">7-Country Comparison</div>
+    <p class="assignment-desc">Key indicators for determining highest and lowest standard of living. Click any country name to view full data.</p>
+    <div class="summary-table-wrap">
+      <table class="summary-table">
+        <thead>
+          <tr>
+            <th>Country</th>
+            <th>Population</th>
+            <th>Life Exp.</th>
+            <th>GDP/Capita (PPP)</th>
+            <th>GDP Growth</th>
+            <th>Inflation</th>
+            <th>Unemployment</th>
+            <th>Poverty %</th>
+            <th>GINI</th>
+            <th>HDI</th>
+            <th>Infant Mortality</th>
+            <th>Maternal Mortality</th>
+            <th>Physicians/1K</th>
+            <th>Education % GDP</th>
+            <th>School Life Exp.</th>
+            <th>Military % GDP</th>
+            <th>Government Type</th>
+            <th>Budget +/-</th>
+            <th>Exports</th>
+            <th>Imports</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td onclick="loadCountryByName('Norway')">Norway</td>
+            <td>5,509,733</td>
+            <td class="best">82.9 yrs</td>
+            <td class="best">$91,100</td>
+            <td>2.1%</td>
+            <td>3.1%</td>
+            <td>4%</td>
+            <td>12.2%</td>
+            <td class="best">26.9</td>
+            <td class="best">0.966</td>
+            <td class="best">1.8/1K</td>
+            <td class="best">1/100K</td>
+            <td class="best">4.98</td>
+            <td>6.6%</td>
+            <td class="best">19 yrs</td>
+            <td>3.4%</td>
+            <td>Parl. const. monarchy</td>
+            <td class="best">+18.6%</td>
+            <td>$229.2B</td>
+            <td>$162.5B</td>
+          </tr>
+          <tr>
+            <td onclick="loadCountryByName('Monaco')">Monaco</td>
+            <td>32,047</td>
+            <td class="best">89.8 yrs</td>
+            <td class="best">$270,100</td>
+            <td>5%</td>
+            <td>5.9%</td>
+            <td>5%</td>
+            <td class="best">~0%</td>
+            <td>27.49</td>
+            <td class="na">N/A</td>
+            <td class="best">1.7/1K</td>
+            <td>5/100K</td>
+            <td class="best">8.61</td>
+            <td class="best">8.2%</td>
+            <td class="best">21 yrs</td>
+            <td class="best">0% (no military)</td>
+            <td>Const. monarchy</td>
+            <td class="best">Surplus</td>
+            <td>~$965M</td>
+            <td>~$1.4B</td>
+          </tr>
+          <tr>
+            <td onclick="loadCountryByName('Iceland')">Iceland</td>
+            <td>364,036</td>
+            <td class="best">84.0 yrs</td>
+            <td>$65,600</td>
+            <td>0.5%</td>
+            <td>5.9%</td>
+            <td class="best">3.2%</td>
+            <td class="best">8.8%</td>
+            <td class="best">26.6</td>
+            <td class="best">0.959</td>
+            <td class="best">1.6/1K</td>
+            <td>3/100K</td>
+            <td>4.37</td>
+            <td>6.2%</td>
+            <td class="best">19 yrs</td>
+            <td>0.3%</td>
+            <td>Unitary parl. republic</td>
+            <td>-3.5%</td>
+            <td>$13.9B</td>
+            <td>$14.3B</td>
+          </tr>
+          <tr>
+            <td onclick="loadCountryByName('Cuba')">Cuba</td>
+            <td>10,059,519</td>
+            <td>80.1 yrs</td>
+            <td>$23,700</td>
+            <td class="worst">-1.9%</td>
+            <td class="worst">76.1%</td>
+            <td class="best">1.6%</td>
+            <td class="na">~0.7% (official)</td>
+            <td class="na">~0.41 (est.)</td>
+            <td>0.764</td>
+            <td>5.2/1K</td>
+            <td>35/100K</td>
+            <td class="best">9.54</td>
+            <td class="best">9.4%</td>
+            <td>14 yrs</td>
+            <td>4.2%</td>
+            <td>Communist state</td>
+            <td class="worst">-7.3%</td>
+            <td>$8.8B</td>
+            <td>$8.1B</td>
+          </tr>
+          <tr>
+            <td onclick="loadCountryByName('Kenya')">Kenya</td>
+            <td>55,751,717</td>
+            <td class="worst">70.4 yrs</td>
+            <td class="worst">$5,800</td>
+            <td class="best">4.5%</td>
+            <td>4.5%</td>
+            <td>5.5%</td>
+            <td class="worst">38.6%</td>
+            <td class="worst">38.7</td>
+            <td class="worst">0.601</td>
+            <td class="worst">26.8/1K</td>
+            <td class="worst">379/100K</td>
+            <td class="worst">0.29</td>
+            <td>3.96%</td>
+            <td class="worst">11 yrs</td>
+            <td>1.1%</td>
+            <td>Presidential republic</td>
+            <td>-5.1%</td>
+            <td>$12.6B</td>
+            <td>$22B</td>
+          </tr>
+          <tr>
+            <td onclick="loadCountryByName('North Korea')">North Korea</td>
+            <td>26,402,841</td>
+            <td class="worst">73.5 yrs</td>
+            <td class="worst">$600</td>
+            <td>3.7%</td>
+            <td class="na">N/R</td>
+            <td>2.9%</td>
+            <td class="na">4.3% (official)</td>
+            <td class="na">N/A</td>
+            <td class="na">N/A</td>
+            <td class="worst">14.7/1K</td>
+            <td class="worst">67/100K</td>
+            <td>3.63</td>
+            <td class="na">N/R</td>
+            <td class="worst">12 yrs</td>
+            <td class="worst">20-30%</td>
+            <td>Dictatorship</td>
+            <td class="na">N/R</td>
+            <td class="worst">$0.33B</td>
+            <td>$2.44B</td>
+          </tr>
+          <tr>
+            <td onclick="loadCountryByName('United States')">United States</td>
+            <td>338,016,259</td>
+            <td>80.9 yrs</td>
+            <td>$75,500</td>
+            <td>2.8%</td>
+            <td class="best">2.9%</td>
+            <td>4.2%</td>
+            <td>10.6%</td>
+            <td class="worst">41.8</td>
+            <td>0.927</td>
+            <td>5/1K</td>
+            <td>17/100K</td>
+            <td>3.68</td>
+            <td>5.8%</td>
+            <td>16 yrs</td>
+            <td>3.2%</td>
+            <td>Const. fed. republic</td>
+            <td class="worst">-6.4%</td>
+            <td>$3.19T</td>
+            <td>$4.11T</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
   <div id="countryList"></div>
   <div class="no-results" id="noResults">No countries match your search.</div>
 </main>
@@ -867,12 +1189,8 @@ const COUNTRIES = [
   ["Zimbabwe","africa","zi"],
   // AUSTRALIA & OCEANIA (30)
   ["American Samoa","australia-oceania","aq"],
-  ["Ashmore and Cartier Islands","australia-oceania","at"],
   ["Australia","australia-oceania","as"],
-  ["Christmas Island","australia-oceania","kt"],
-  ["Cocos (Keeling) Islands","australia-oceania","ck"],
   ["Cook Islands","australia-oceania","cw"],
-  ["Coral Sea Islands","australia-oceania","cr"],
   ["Fiji","australia-oceania","fj"],
   ["French Polynesia","australia-oceania","fp"],
   ["Guam","australia-oceania","gq"],
@@ -883,18 +1201,13 @@ const COUNTRIES = [
   ["New Caledonia","australia-oceania","nc"],
   ["New Zealand","australia-oceania","nz"],
   ["Niue","australia-oceania","ne"],
-  ["Norfolk Island","australia-oceania","nf"],
   ["Northern Mariana Islands","australia-oceania","cq"],
   ["Palau","australia-oceania","ps"],
-  ["Pitcairn Islands","australia-oceania","pc"],
   ["Samoa","australia-oceania","ws"],
   ["Solomon Islands","australia-oceania","bp"],
-  ["Tokelau","australia-oceania","tl"],
   ["Tonga","australia-oceania","tn"],
   ["Tuvalu","australia-oceania","tv"],
-  ["US Pacific Island Wildlife Refuges","australia-oceania","um"],
   ["Vanuatu","australia-oceania","nh"],
-  ["Wake Island","australia-oceania","wq"],
   ["Wallis and Futuna","australia-oceania","wf"],
   // CENTRAL AMERICA & CARIBBEAN (33)
   ["Anguilla","central-america-n-caribbean","av"],
@@ -917,7 +1230,6 @@ const COUNTRIES = [
   ["Honduras","central-america-n-caribbean","ho"],
   ["Jamaica","central-america-n-caribbean","jm"],
   ["Montserrat","central-america-n-caribbean","mh"],
-  ["Navassa Island","central-america-n-caribbean","bq"],
   ["Nicaragua","central-america-n-caribbean","nu"],
   ["Panama","central-america-n-caribbean","pm"],
   ["Puerto Rico","central-america-n-caribbean","rq"],
@@ -954,17 +1266,14 @@ const COUNTRIES = [
   ["Mongolia","east-n-southeast-asia","mg"],
   ["North Korea","east-n-southeast-asia","kn"],
   ["Papua New Guinea","east-n-southeast-asia","pp"],
-  ["Paracel Islands","east-n-southeast-asia","pf"],
   ["Philippines","east-n-southeast-asia","rp"],
   ["Singapore","east-n-southeast-asia","sn"],
   ["South Korea","east-n-southeast-asia","ks"],
-  ["Spratly Islands","east-n-southeast-asia","pg"],
   ["Taiwan","east-n-southeast-asia","tw"],
   ["Thailand","east-n-southeast-asia","th"],
   ["Timor-Leste","east-n-southeast-asia","tt"],
   ["Vietnam","east-n-southeast-asia","vm"],
   // EUROPE (55)
-  ["Akrotiri","europe","ax"],
   ["Albania","europe","al"],
   ["Andorra","europe","an"],
   ["Austria","europe","au"],
@@ -976,9 +1285,7 @@ const COUNTRIES = [
   ["Cyprus","europe","cy"],
   ["Czechia","europe","ez"],
   ["Denmark","europe","da"],
-  ["Dhekelia","europe","dx"],
   ["Estonia","europe","en"],
-  ["European Union","europe","ee"],
   ["Faroe Islands","europe","fo"],
   ["Finland","europe","fi"],
   ["France","europe","fr"],
@@ -991,7 +1298,6 @@ const COUNTRIES = [
   ["Ireland","europe","ei"],
   ["Isle of Man","europe","im"],
   ["Italy","europe","it"],
-  ["Jan Mayen","europe","jn"],
   ["Jersey","europe","je"],
   ["Kosovo","europe","kv"],
   ["Latvia","europe","lg"],
@@ -1013,7 +1319,6 @@ const COUNTRIES = [
   ["Slovakia","europe","lo"],
   ["Slovenia","europe","si"],
   ["Spain","europe","sp"],
-  ["Svalbard","europe","sv"],
   ["Sweden","europe","sw"],
   ["Switzerland","europe","sz"],
   ["Ukraine","europe","up"],
@@ -1021,7 +1326,6 @@ const COUNTRIES = [
   ["Vatican City","europe","vt"],
   // MIDDLE EAST (16)
   ["Bahrain","middle-east","ba"],
-  ["Gaza Strip","middle-east","gz"],
   ["Iran","middle-east","ir"],
   ["Iraq","middle-east","iz"],
   ["Israel","middle-east","is"],
@@ -1034,12 +1338,11 @@ const COUNTRIES = [
   ["Syria","middle-east","sy"],
   ["Turkey","middle-east","tu"],
   ["United Arab Emirates","middle-east","ae"],
-  ["West Bank","middle-east","we"],
+  ["Palestine (West Bank)","middle-east","we"],
   ["Yemen","middle-east","ym"],
   // NORTH AMERICA (7)
   ["Bermuda","north-america","bd"],
   ["Canada","north-america","ca"],
-  ["Clipperton Island","north-america","ip"],
   ["Greenland","north-america","gl"],
   ["Mexico","north-america","mx"],
   ["Saint Pierre and Miquelon","north-america","sb"],
@@ -1055,7 +1358,6 @@ const COUNTRIES = [
   ["Guyana","south-america","gy"],
   ["Paraguay","south-america","pa"],
   ["Peru","south-america","pe"],
-  ["South Georgia and South Sandwich Islands","south-america","sx"],
   ["Suriname","south-america","ns"],
   ["Uruguay","south-america","uy"],
   ["Venezuela","south-america","ve"],
@@ -1063,7 +1365,6 @@ const COUNTRIES = [
   ["Afghanistan","south-asia","af"],
   ["Bangladesh","south-asia","bg"],
   ["Bhutan","south-asia","bt"],
-  ["British Indian Ocean Territory","south-asia","io"],
   ["India","south-asia","in"],
   ["Maldives","south-asia","mv"],
   ["Nepal","south-asia","np"],
@@ -1228,6 +1529,11 @@ function filterCountries(query) {
 /* ============================================
    NAVIGATION
    ============================================ */
+function loadCountryByName(name) {
+  const entry = COUNTRIES.find(c => c[0] === name);
+  if (entry) loadCountry(entry[0], entry[1], entry[2]);
+}
+
 function showLanding() {
   document.getElementById('landing').classList.remove('hidden');
   document.getElementById('detailView').classList.remove('active');
