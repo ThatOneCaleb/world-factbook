@@ -791,7 +791,8 @@ a:hover { color: var(--gold-bright); }
 }
 
 .summary-table-wrap {
-  overflow-x: auto;
+  overflow: auto;
+  max-height: 70vh;
   border: 1px solid var(--border);
   border-radius: 8px;
   background: var(--bg-surface);
@@ -822,6 +823,8 @@ a:hover { color: var(--gold-bright); }
   padding: 10px 12px;
   text-align: left;
   border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  user-select: none;
 }
 
 .summary-table th:first-child {
@@ -885,6 +888,59 @@ a:hover { color: var(--gold-bright); }
   margin-left: 6px;
   vertical-align: middle;
 }
+
+.summary-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 1rem;
+}
+
+.summary-filter {
+  flex: 1;
+  max-width: 320px;
+  padding: 10px 16px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-family: var(--font-heading);
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.3s var(--ease-out);
+}
+
+.summary-filter:focus {
+  border-color: var(--gold-dim);
+}
+
+.summary-filter::placeholder {
+  color: var(--text-muted);
+}
+
+.summary-count {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.summary-table th:hover {
+  color: var(--gold-bright);
+}
+
+.summary-table th .sort-arrow {
+  display: inline-block;
+  margin-left: 4px;
+  font-size: 10px;
+  opacity: 0.3;
+  transition: opacity 0.2s;
+}
+
+.summary-table th.sorted .sort-arrow {
+  opacity: 1;
+  color: var(--gold);
+}
+
 </style>
 </head>
 <body>
@@ -913,193 +969,19 @@ a:hover { color: var(--gold-bright); }
     </div>
   </div>
 
-  <!-- ASSIGNMENT SUMMARY -->
+  <!-- GLOBAL SUMMARY TABLE -->
   <div class="assignment-section">
-    <div class="assignment-label">AP Macro -- Standard of Living Analysis</div>
-    <div class="assignment-title">7-Country Comparison</div>
-    <p class="assignment-desc">Key indicators for determining highest and lowest standard of living. Click any country name to view full data.</p>
-    <div class="summary-table-wrap">
-      <table class="summary-table">
-        <thead>
-          <tr>
-            <th>Country</th>
-            <th>Population</th>
-            <th>Life Exp.</th>
-            <th>GDP/Capita (PPP)</th>
-            <th>GDP Growth</th>
-            <th>Inflation</th>
-            <th>Unemployment</th>
-            <th>Poverty %</th>
-            <th>GINI</th>
-            <th>HDI</th>
-            <th>Infant Mortality</th>
-            <th>Maternal Mortality</th>
-            <th>Physicians/1K</th>
-            <th>Education % GDP</th>
-            <th>School Life Exp.</th>
-            <th>Military % GDP</th>
-            <th>Government Type</th>
-            <th>Budget +/-</th>
-            <th>Exports</th>
-            <th>Imports</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td onclick="loadCountryByName('Norway')">Norway</td>
-            <td>5,509,733</td>
-            <td class="best">82.9 yrs</td>
-            <td class="best">$91,100</td>
-            <td>2.1%</td>
-            <td>3.1%</td>
-            <td>4%</td>
-            <td>12.2%</td>
-            <td class="best">26.9</td>
-            <td class="best">0.966</td>
-            <td class="best">1.8/1K</td>
-            <td class="best">1/100K</td>
-            <td class="best">4.98</td>
-            <td>6.6%</td>
-            <td class="best">19 yrs</td>
-            <td>3.4%</td>
-            <td>Parl. const. monarchy</td>
-            <td class="best">+18.6%</td>
-            <td>$229.2B</td>
-            <td>$162.5B</td>
-          </tr>
-          <tr>
-            <td onclick="loadCountryByName('Monaco')">Monaco</td>
-            <td>32,047</td>
-            <td class="best">89.8 yrs</td>
-            <td class="best">$270,100</td>
-            <td>5%</td>
-            <td>5.9%</td>
-            <td>5%</td>
-            <td class="best">~0%</td>
-            <td>27.49</td>
-            <td class="na">N/A</td>
-            <td class="best">1.7/1K</td>
-            <td>5/100K</td>
-            <td class="best">8.61</td>
-            <td class="best">8.2%</td>
-            <td class="best">21 yrs</td>
-            <td class="best">0% (no military)</td>
-            <td>Const. monarchy</td>
-            <td class="best">Surplus</td>
-            <td>~$965M</td>
-            <td>~$1.4B</td>
-          </tr>
-          <tr>
-            <td onclick="loadCountryByName('Iceland')">Iceland</td>
-            <td>364,036</td>
-            <td class="best">84.0 yrs</td>
-            <td>$65,600</td>
-            <td>0.5%</td>
-            <td>5.9%</td>
-            <td class="best">3.2%</td>
-            <td class="best">8.8%</td>
-            <td class="best">26.6</td>
-            <td class="best">0.959</td>
-            <td class="best">1.6/1K</td>
-            <td>3/100K</td>
-            <td>4.37</td>
-            <td>6.2%</td>
-            <td class="best">19 yrs</td>
-            <td>0.3%</td>
-            <td>Unitary parl. republic</td>
-            <td>-3.5%</td>
-            <td>$13.9B</td>
-            <td>$14.3B</td>
-          </tr>
-          <tr>
-            <td onclick="loadCountryByName('Cuba')">Cuba</td>
-            <td>10,059,519</td>
-            <td>80.1 yrs</td>
-            <td>$23,700</td>
-            <td class="worst">-1.9%</td>
-            <td class="worst">76.1%</td>
-            <td class="best">1.6%</td>
-            <td class="na">~0.7% (official)</td>
-            <td class="na">~0.41 (est.)</td>
-            <td>0.764</td>
-            <td>5.2/1K</td>
-            <td>35/100K</td>
-            <td class="best">9.54</td>
-            <td class="best">9.4%</td>
-            <td>14 yrs</td>
-            <td>4.2%</td>
-            <td>Communist state</td>
-            <td class="worst">-7.3%</td>
-            <td>$8.8B</td>
-            <td>$8.1B</td>
-          </tr>
-          <tr>
-            <td onclick="loadCountryByName('Kenya')">Kenya</td>
-            <td>55,751,717</td>
-            <td class="worst">70.4 yrs</td>
-            <td class="worst">$5,800</td>
-            <td class="best">4.5%</td>
-            <td>4.5%</td>
-            <td>5.5%</td>
-            <td class="worst">38.6%</td>
-            <td class="worst">38.7</td>
-            <td class="worst">0.601</td>
-            <td class="worst">26.8/1K</td>
-            <td class="worst">379/100K</td>
-            <td class="worst">0.29</td>
-            <td>3.96%</td>
-            <td class="worst">11 yrs</td>
-            <td>1.1%</td>
-            <td>Presidential republic</td>
-            <td>-5.1%</td>
-            <td>$12.6B</td>
-            <td>$22B</td>
-          </tr>
-          <tr>
-            <td onclick="loadCountryByName('North Korea')">North Korea</td>
-            <td>26,402,841</td>
-            <td class="worst">73.5 yrs</td>
-            <td class="worst">$600</td>
-            <td>3.7%</td>
-            <td class="na">N/R</td>
-            <td>2.9%</td>
-            <td class="na">4.3% (official)</td>
-            <td class="na">N/A</td>
-            <td class="na">N/A</td>
-            <td class="worst">14.7/1K</td>
-            <td class="worst">67/100K</td>
-            <td>3.63</td>
-            <td class="na">N/R</td>
-            <td class="worst">12 yrs</td>
-            <td class="worst">20-30%</td>
-            <td>Dictatorship</td>
-            <td class="na">N/R</td>
-            <td class="worst">$0.33B</td>
-            <td>$2.44B</td>
-          </tr>
-          <tr>
-            <td onclick="loadCountryByName('United States')">United States</td>
-            <td>338,016,259</td>
-            <td>80.9 yrs</td>
-            <td>$75,500</td>
-            <td>2.8%</td>
-            <td class="best">2.9%</td>
-            <td>4.2%</td>
-            <td>10.6%</td>
-            <td class="worst">41.8</td>
-            <td>0.927</td>
-            <td>5/1K</td>
-            <td>17/100K</td>
-            <td>3.68</td>
-            <td>5.8%</td>
-            <td>16 yrs</td>
-            <td>3.2%</td>
-            <td>Const. fed. republic</td>
-            <td class="worst">-6.4%</td>
-            <td>$3.19T</td>
-            <td>$4.11T</td>
-          </tr>
-        </tbody>
+    <div class="assignment-label">Global Intelligence Dashboard</div>
+    <div class="assignment-title">All Countries Comparison</div>
+    <p class="assignment-desc">Key indicators across all 230 countries and territories. Click column headers to sort. Click any country name to view full data.</p>
+    <div class="summary-filter-row">
+      <input type="text" class="summary-filter" id="summaryFilter" placeholder="Filter countries..." autocomplete="off" spellcheck="false">
+      <span class="summary-count" id="summaryCount">230 countries</span>
+    </div>
+    <div class="summary-table-wrap" id="summaryTableWrap">
+      <table class="summary-table" id="summaryTable">
+        <thead><tr id="summaryHead"></tr></thead>
+        <tbody id="summaryBody"></tbody>
       </table>
     </div>
   </div>
@@ -1125,6 +1007,7 @@ a:hover { color: var(--gold-bright); }
   </p>
 </footer>
 
+<script src="summary_data.js"></script>
 <script>
 /* ============================================
    COUNTRY MAP: name -> [region, fips_code]
@@ -1490,12 +1373,103 @@ function buildLanding() {
 }
 
 /* ============================================
+   SUMMARY TABLE
+   ============================================ */
+const SUMMARY_COLS = [
+  { key: 'n',    label: 'Country',          fmt: v => v, numeric: false },
+  { key: 'pop',  label: 'Population',       fmt: v => v != null ? v.toLocaleString('en-US', {maximumFractionDigits:0}) : '—', numeric: true },
+  { key: 'le',   label: 'Life Exp.',        fmt: v => v != null ? v.toFixed(1) + ' yr' : '—', numeric: true, higherBetter: true },
+  { key: 'gdpc', label: 'GDP/Cap (PPP)',    fmt: v => v != null ? '$' + v.toLocaleString('en-US', {maximumFractionDigits:0}) : '—', numeric: true, higherBetter: true },
+  { key: 'gdpg', label: 'GDP Growth',       fmt: v => v != null ? v.toFixed(1) + '%' : '—', numeric: true },
+  { key: 'inf',  label: 'Inflation',        fmt: v => v != null ? v.toFixed(1) + '%' : '—', numeric: true },
+  { key: 'unemp',label: 'Unemp.',           fmt: v => v != null ? v.toFixed(1) + '%' : '—', numeric: true },
+  { key: 'pov',  label: 'Poverty %',        fmt: v => v != null ? v.toFixed(1) + '%' : '—', numeric: true },
+  { key: 'gini', label: 'GINI',             fmt: v => v != null ? v.toFixed(1) : '—', numeric: true },
+  { key: 'hdi',  label: 'HDI',              fmt: v => v != null ? v.toFixed(3) : '—', numeric: true, higherBetter: true },
+  { key: 'im',   label: 'Infant Mort.',     fmt: v => v != null ? v.toFixed(1) + '/1K' : '—', numeric: true },
+  { key: 'mm',   label: 'Maternal Mort.',   fmt: v => v != null ? Math.round(v) + '/100K' : '—', numeric: true },
+  { key: 'phys', label: 'Physicians/1K',    fmt: v => v != null ? v.toFixed(2) : '—', numeric: true, higherBetter: true },
+  { key: 'edu',  label: 'Edu % GDP',        fmt: v => v != null ? v.toFixed(1) + '%' : '—', numeric: true },
+  { key: 'sle',  label: 'School Life',      fmt: v => v != null ? v + ' yr' : '—', numeric: true, higherBetter: true },
+  { key: 'mil',  label: 'Military % GDP',   fmt: v => v != null ? v.toFixed(1) + '%' : '—', numeric: true },
+  { key: 'gov',  label: 'Gov. Type',        fmt: v => v ? (v.length > 30 ? v.slice(0,28) + '...' : v) : '—', numeric: false },
+];
+
+let summarySort = { key: 'n', asc: true };
+let summaryFilterText = '';
+
+function buildSummaryTable() {
+  if (typeof SUMMARY_DATA === 'undefined') return;
+
+  // Build header
+  const headRow = document.getElementById('summaryHead');
+  headRow.innerHTML = SUMMARY_COLS.map(col => {
+    const active = summarySort.key === col.key;
+    const arrow = active ? (summarySort.asc ? '\u25B2' : '\u25BC') : '\u25B2';
+    return `<th class="${active ? 'sorted' : ''}" onclick="sortSummary('${col.key}', ${col.numeric})">${col.label}<span class="sort-arrow">${arrow}</span></th>`;
+  }).join('');
+
+  // Filter
+  let rows = SUMMARY_DATA;
+  if (summaryFilterText) {
+    const q = summaryFilterText.toLowerCase();
+    rows = rows.filter(r => r.n.toLowerCase().includes(q) || (r.gov && r.gov.toLowerCase().includes(q)));
+  }
+
+  // Sort
+  const col = SUMMARY_COLS.find(c => c.key === summarySort.key);
+  rows = [...rows].sort((a, b) => {
+    let va = a[summarySort.key], vb = b[summarySort.key];
+    if (va == null && vb == null) return 0;
+    if (va == null) return 1;
+    if (vb == null) return -1;
+    if (col && !col.numeric) {
+      const cmp = String(va).localeCompare(String(vb));
+      return summarySort.asc ? cmp : -cmp;
+    }
+    return summarySort.asc ? va - vb : vb - va;
+  });
+
+  // Build body
+  const tbody = document.getElementById('summaryBody');
+  tbody.innerHTML = rows.map(row => {
+    return '<tr>' + SUMMARY_COLS.map(col => {
+      if (col.key === 'n') {
+        return `<td onclick="loadCountryByName('${row.n.replace(/'/g, "\\'")}')">${row.n}</td>`;
+      }
+      const val = row[col.key];
+      const display = col.fmt(val);
+      const cls = display === '—' ? ' class="na"' : '';
+      return `<td${cls}>${display}</td>`;
+    }).join('') + '</tr>';
+  }).join('');
+
+  document.getElementById('summaryCount').textContent = `${rows.length} countries`;
+}
+
+function sortSummary(key, numeric) {
+  if (summarySort.key === key) {
+    summarySort.asc = !summarySort.asc;
+  } else {
+    summarySort.key = key;
+    summarySort.asc = !numeric; // text ascending, numbers descending by default
+  }
+  buildSummaryTable();
+}
+
+/* ============================================
    SEARCH
    ============================================ */
 let searchTimer;
 document.addEventListener('DOMContentLoaded', () => {
   buildLanding();
+  buildSummaryTable();
   handleHash();
+
+  document.getElementById('summaryFilter').addEventListener('input', (e) => {
+    summaryFilterText = e.target.value;
+    buildSummaryTable();
+  });
 
   document.getElementById('searchInput').addEventListener('input', (e) => {
     clearTimeout(searchTimer);
