@@ -257,9 +257,22 @@ def fetch_country(entry):
     pop_text = get_text(safe_get(people, "Population", "total"))
     pop_num = extract_number(pop_text)
 
-    # Life expectancy
+    # Life expectancy (skip year-like numbers at start, look for XX.X pattern)
     le_text = get_text(safe_get(people, "Life expectancy at birth", "total population"))
-    le_num = extract_number(le_text)
+    le_num = None
+    if le_text:
+        # Remove parenthesized year estimates like "(2017 est.)"
+        le_clean = re.sub(r'\(\d{4}\s*est\.?\)', '', le_text)
+        le_m = re.search(r'(\d{1,2}\.\d)', le_clean)
+        if le_m:
+            le_num = le_m.group(1)
+        else:
+            # Fallback: find a number that's plausibly a life expectancy (30-100)
+            for m in re.finditer(r'[\d.]+', le_clean):
+                val = float(m.group())
+                if 30 <= val <= 100:
+                    le_num = m.group()
+                    break
 
     # GDP per capita - get most recent year
     gdpc_obj = safe_get(econ, "Real GDP per capita")
@@ -346,15 +359,30 @@ def fetch_country(entry):
     sle_text = get_text(safe_get(people, "School life expectancy (primary to tertiary education)", "total"))
     sle_num = extract_number(sle_text, r'[\d]+')
 
-    # Military expenditure
+    # Military expenditure (look for "X% of GDP" pattern, skip narrative text)
     mil_obj = safe_get(mil, "Military expenditures")
-    mil_text = None
+    mil_num = None
     if isinstance(mil_obj, dict):
+        # Try structured multi-year entries first (e.g. "Military Expenditures 2024": {...})
         for k, v in mil_obj.items():
-            if 'note' not in k.lower():
-                mil_text = get_text(v)
+            if 'note' in k.lower() or k == 'text':
+                continue
+            t = get_text(v)
+            mm = re.search(r'([\d.]+)%\s*of\s*GDP', t or '')
+            if mm:
+                mil_num = mm.group(1)
                 break
-    mil_num = extract_number(mil_text, r'[\d.]+')
+        # If still None, try the top-level text for "X% of GDP" or "X-Y% of GDP"
+        if mil_num is None:
+            t = get_text(mil_obj)
+            mm = re.search(r'(\d{1,2}(?:\.\d+)?)[-%]\s*(?:of\s*)?GDP', t or '', re.IGNORECASE)
+            if not mm:
+                # Try "XX-YY% of GDP" and take midpoint or "estimated XX%" patterns
+                mm2 = re.search(r'(\d{1,2})-(\d{1,2})%\s*of\s*(?:.*?\s)?GDP', t or '', re.IGNORECASE)
+                if mm2:
+                    mil_num = str((float(mm2.group(1)) + float(mm2.group(2))) / 2)
+            else:
+                mil_num = mm.group(1)
 
     # Government type
     gov_text = get_text(safe_get(gov, "Government type"))
