@@ -361,6 +361,137 @@ def fetch_country(entry):
     if gov_text:
         gov_text = re.sub(r'<[^>]+>', '', gov_text).strip()
 
+    # Helper: extract first year dollar amount from multi-year dict (billions)
+    def first_year_billions(obj):
+        if not isinstance(obj, dict):
+            return None
+        for k, v in obj.items():
+            if 'note' in k.lower():
+                continue
+            t = get_text(v)
+            m = re.search(r'\$([\d,.]+)\s*(trillion|billion|million)?', t, re.IGNORECASE)
+            if m:
+                num = float(m.group(1).replace(',', ''))
+                unit = (m.group(2) or '').lower()
+                if unit == 'trillion':
+                    num *= 1000
+                elif unit == 'million':
+                    num /= 1000
+                # default is already billions
+                return round(num, 2)
+            # plain number (already in dollars)
+            m2 = re.search(r'[\d,.]+', t)
+            if m2:
+                return round(float(m2.group().replace(',', '')) / 1e9, 2)
+            break
+        return None
+
+    # Exports $
+    exp_val = first_year_billions(safe_get(econ, "Exports"))
+
+    # Imports $
+    imp_val = first_year_billions(safe_get(econ, "Imports"))
+
+    # Export partners
+    exp_part = get_text(safe_get(econ, "Exports - partners"))
+    if exp_part:
+        exp_part = re.sub(r'<[^>]+>', '', exp_part).strip()
+
+    # Export commodities
+    exp_comm = get_text(safe_get(econ, "Exports - commodities"))
+    if exp_comm:
+        exp_comm = re.sub(r'<[^>]+>', '', exp_comm).strip()
+
+    # Import partners
+    imp_part = get_text(safe_get(econ, "Imports - partners"))
+    if imp_part:
+        imp_part = re.sub(r'<[^>]+>', '', imp_part).strip()
+
+    # Import commodities
+    imp_comm = get_text(safe_get(econ, "Imports - commodities"))
+    if imp_comm:
+        imp_comm = re.sub(r'<[^>]+>', '', imp_comm).strip()
+
+    # Budget surplus/deficit (calculate from revenues - expenditures)
+    budget_num = None
+    budget_obj = safe_get(econ, "Budget")
+    if isinstance(budget_obj, dict):
+        rev_text = get_text(safe_get(budget_obj, "revenues"))
+        exp_text = get_text(safe_get(budget_obj, "expenditures"))
+        def parse_dollars_b(t):
+            if not t:
+                return None
+            m = re.search(r'\$([\d,.]+)\s*(trillion|billion|million)?', t, re.IGNORECASE)
+            if not m:
+                return None
+            n = float(m.group(1).replace(',', ''))
+            u = (m.group(2) or 'billion').lower()
+            if u == 'trillion': n *= 1000
+            elif u == 'million': n /= 1000
+            return n
+        rev_b = parse_dollars_b(rev_text)
+        exp_b = parse_dollars_b(exp_text)
+        if rev_b is not None and exp_b is not None:
+            budget_num = round(rev_b - exp_b, 1)  # positive = surplus, negative = deficit
+
+    # Current account balance (can be negative)
+    cab_val = None
+    cab_obj = safe_get(econ, "Current account balance")
+    if isinstance(cab_obj, dict):
+        for k, v in cab_obj.items():
+            if 'note' in k.lower():
+                continue
+            t = get_text(v)
+            negative = '-' in t.split('$')[0] if '$' in t else False
+            m = re.search(r'\$([\d,.]+)\s*(trillion|billion|million)?', t, re.IGNORECASE)
+            if m:
+                num = float(m.group(1).replace(',', ''))
+                unit = (m.group(2) or 'billion').lower()
+                if unit == 'trillion': num *= 1000
+                elif unit == 'million': num /= 1000
+                cab_val = round(-num if negative else num, 2)
+            break
+
+    # Labor force (handle "174.174 million" style)
+    labor_text = get_text(safe_get(econ, "Labor force"))
+    labor_num = None
+    if labor_text:
+        lm = re.search(r'([\d,.]+)\s*(million|billion|thousand)?', labor_text, re.IGNORECASE)
+        if lm:
+            lval = float(lm.group(1).replace(',', ''))
+            lunit = (lm.group(2) or '').lower()
+            if lunit == 'billion': lval *= 1e9
+            elif lunit == 'million': lval *= 1e6
+            elif lunit == 'thousand': lval *= 1e3
+            labor_num = int(lval)
+
+    # GDP by sector
+    sector_obj = safe_get(econ, "GDP - composition, by sector of origin")
+    sector = {}
+    if isinstance(sector_obj, dict):
+        for sk in ['agriculture', 'industry', 'services']:
+            sv = get_text(safe_get(sector_obj, sk))
+            sm = re.search(r'[\d.]+', sv or '')
+            if sm:
+                sector[sk] = float(sm.group())
+
+    # GDP composition by end use
+    enduse_obj = safe_get(econ, "GDP - composition, by end use")
+    enduse = {}
+    if isinstance(enduse_obj, dict):
+        eu_map = {
+            'household consumption': 'hh',
+            'government consumption': 'govt',
+            'investment in fixed capital': 'inv',
+            'exports of goods and services': 'exp',
+            'imports of goods and services': 'imp',
+        }
+        for ek, short in eu_map.items():
+            ev = get_text(safe_get(enduse_obj, ek))
+            em = re.search(r'-?[\d.]+', ev or '')
+            if em:
+                enduse[short] = float(em.group())
+
     # HDI
     hdi_key = name.lower().replace(' (myanmar)', '').replace('bahamas, the', 'bahamas').replace('gambia, the', 'gambia')
     hdi = HDI.get(hdi_key)
@@ -385,6 +516,17 @@ def fetch_country(entry):
         "sle": safe_float(sle_num),
         "mil": safe_float(mil_num),
         "gov": gov_text,
+        "exp": exp_val,
+        "imp": imp_val,
+        "expP": exp_part or None,
+        "expC": exp_comm or None,
+        "impP": imp_part or None,
+        "impC": imp_comm or None,
+        "budget": budget_num,
+        "cab": cab_val,
+        "labor": safe_float(labor_num),
+        "sector": sector or None,
+        "enduse": enduse or None,
     }
 
     print(f"  OK: {name}", file=sys.stderr)

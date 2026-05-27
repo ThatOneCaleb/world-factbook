@@ -1375,6 +1375,15 @@ function buildLanding() {
 /* ============================================
    SUMMARY TABLE
    ============================================ */
+function fmtB(v) {
+  if (v == null) return '—';
+  const abs = Math.abs(v);
+  const sign = v < 0 ? '-' : '';
+  if (abs >= 1000) return sign + '$' + (abs/1000).toFixed(2) + 'T';
+  if (abs >= 1) return sign + '$' + abs.toFixed(1) + 'B';
+  return sign + '$' + (abs*1000).toFixed(0) + 'M';
+}
+
 const SUMMARY_COLS = [
   { key: 'n',    label: 'Country',          fmt: v => v, numeric: false },
   { key: 'pop',  label: 'Population',       fmt: v => v != null ? v.toLocaleString('en-US', {maximumFractionDigits:0}) : '—', numeric: true },
@@ -1393,6 +1402,17 @@ const SUMMARY_COLS = [
   { key: 'sle',  label: 'School Life',      fmt: v => v != null ? v + ' yr' : '—', numeric: true, higherBetter: true },
   { key: 'mil',  label: 'Military % GDP',   fmt: v => v != null ? v.toFixed(1) + '%' : '—', numeric: true },
   { key: 'gov',  label: 'Gov. Type',        fmt: v => v ? (v.length > 30 ? v.slice(0,28) + '...' : v) : '—', numeric: false },
+  { key: 'budget',label: 'Budget +/-',      fmt: fmtB, numeric: true },
+  { key: 'exp',  label: 'Exports',          fmt: fmtB, numeric: true },
+  { key: 'imp',  label: 'Imports',          fmt: fmtB, numeric: true },
+  { key: 'cab',  label: 'Curr. Acct.',      fmt: fmtB, numeric: true },
+  { key: 'labor',label: 'Labor Force',      fmt: v => v != null ? v.toLocaleString('en-US', {maximumFractionDigits:0}) : '—', numeric: true },
+  { key: 'expP', label: 'Export Partners',  fmt: v => v ? (v.length > 45 ? v.slice(0,43) + '...' : v) : '—', numeric: false },
+  { key: 'expC', label: 'Export Commodities', fmt: v => v ? (v.length > 45 ? v.slice(0,43) + '...' : v) : '—', numeric: false },
+  { key: 'impP', label: 'Import Partners',  fmt: v => v ? (v.length > 45 ? v.slice(0,43) + '...' : v) : '—', numeric: false },
+  { key: 'impC', label: 'Import Commodities', fmt: v => v ? (v.length > 45 ? v.slice(0,43) + '...' : v) : '—', numeric: false },
+  { key: 'sector', label: 'GDP Sectors (A/I/S)', fmt: v => v ? `${v.agriculture??'—'}/${v.industry??'—'}/${v.services??'—'}%` : '—', numeric: false },
+  { key: 'enduse', label: 'GDP Use (HH/Gov/Inv)', fmt: v => v ? `${v.hh??'—'}/${v.govt??'—'}/${v.inv??'—'}%` : '—', numeric: false },
 ];
 
 let summarySort = { key: 'n', asc: true };
