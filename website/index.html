@@ -1,0 +1,1608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The World Factbook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Fira+Code:wght@400;500&family=Newsreader:ital,wght@0,400;0,500;1,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================
+   CSS VARIABLES
+   ============================================ */
+:root {
+  --bg-deep: #07070c;
+  --bg-base: #0a0a0f;
+  --bg-surface: #12121e;
+  --bg-elevated: #1a1a2a;
+  --bg-hover: #22223a;
+  --border: #2a2a3a;
+  --border-subtle: #1e1e2e;
+  --gold: #c8a96e;
+  --gold-dim: #a08850;
+  --gold-bright: #e0c888;
+  --blue: #4a9eff;
+  --blue-dim: #3070bb;
+  --text-primary: #e8e4dd;
+  --text-secondary: #8a8680;
+  --text-muted: #5a5854;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-heading: 'Outfit', system-ui, sans-serif;
+  --font-mono: 'Fira Code', monospace;
+  --font-body: 'Newsreader', Georgia, serif;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ============================================
+   RESET & BASE
+   ============================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: var(--gold-dim) var(--bg-deep);
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg-base);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Noise texture overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+::selection {
+  background: var(--gold);
+  color: var(--bg-deep);
+}
+
+a { color: var(--blue); text-decoration: none; }
+a:hover { color: var(--gold-bright); }
+
+/* ============================================
+   HEADER
+   ============================================ */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(7, 7, 12, 0.85);
+  backdrop-filter: blur(20px) saturate(1.5);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 0 2rem;
+}
+
+.header-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+
+.site-logo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.logo-seal {
+  width: 36px;
+  height: 36px;
+  border: 2px solid var(--gold);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--gold);
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+
+.logo-text {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--text-primary);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.logo-text span {
+  color: var(--gold);
+}
+
+.header-meta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+
+/* ============================================
+   SEARCH
+   ============================================ */
+.search-wrap {
+  position: relative;
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.search-input {
+  width: 100%;
+  padding: 14px 20px 14px 48px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-family: var(--font-heading);
+  font-size: 15px;
+  font-weight: 400;
+  outline: none;
+  transition: border-color 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out);
+}
+
+.search-input::placeholder {
+  color: var(--text-muted);
+  font-weight: 300;
+}
+
+.search-input:focus {
+  border-color: var(--gold-dim);
+  box-shadow: 0 0 0 3px rgba(200, 169, 110, 0.1), 0 8px 32px rgba(0,0,0,0.3);
+}
+
+.search-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.search-count {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* ============================================
+   LANDING PAGE
+   ============================================ */
+.landing {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 3rem 2rem 4rem;
+}
+
+.hero {
+  text-align: center;
+  padding: 4rem 0 3rem;
+}
+
+.hero-label {
+  font-family: var(--font-heading);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 1.2rem;
+}
+
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 7vw, 5.5rem);
+  font-weight: 700;
+  line-height: 0.95;
+  color: var(--text-primary);
+  margin-bottom: 1.5rem;
+}
+
+.hero h1 em {
+  font-style: italic;
+  color: var(--gold);
+}
+
+.hero-sub {
+  font-family: var(--font-body);
+  font-size: 1.15rem;
+  color: var(--text-secondary);
+  max-width: 520px;
+  margin: 0 auto 2.5rem;
+  line-height: 1.6;
+}
+
+/* Region groups */
+.region-group {
+  margin-bottom: 3rem;
+  animation: fadeUp 0.5s var(--ease-out) both;
+}
+
+.region-group:nth-child(2) { animation-delay: 0.05s; }
+.region-group:nth-child(3) { animation-delay: 0.1s; }
+.region-group:nth-child(4) { animation-delay: 0.15s; }
+.region-group:nth-child(5) { animation-delay: 0.2s; }
+.region-group:nth-child(6) { animation-delay: 0.25s; }
+.region-group:nth-child(7) { animation-delay: 0.3s; }
+.region-group:nth-child(8) { animation-delay: 0.35s; }
+.region-group:nth-child(9) { animation-delay: 0.4s; }
+.region-group:nth-child(10) { animation-delay: 0.45s; }
+.region-group:nth-child(11) { animation-delay: 0.5s; }
+
+.region-label {
+  font-family: var(--font-heading);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding-bottom: 0.8rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.region-label .count {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--gold-dim);
+  background: rgba(200, 169, 110, 0.08);
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+.country-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 8px;
+}
+
+.country-card {
+  padding: 12px 16px;
+  background: var(--bg-surface);
+  border: 1px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.25s var(--ease-out);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.country-card:hover {
+  background: var(--bg-hover);
+  border-color: var(--gold-dim);
+  transform: translateY(-1px);
+}
+
+.country-card .name {
+  font-family: var(--font-heading);
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.country-card .code {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+
+.country-card.hidden { display: none; }
+
+.no-results {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--text-muted);
+  font-family: var(--font-heading);
+  font-size: 15px;
+  display: none;
+}
+
+/* ============================================
+   COUNTRY DETAIL VIEW
+   ============================================ */
+.detail-view {
+  display: none;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem 4rem;
+}
+
+.detail-view.active { display: block; }
+.landing.hidden { display: none; }
+
+/* Back button */
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 0;
+  margin: 1.5rem 0;
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  background: none;
+  border: none;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
+
+.back-btn:hover { color: var(--gold); }
+
+.back-btn svg {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.2s var(--ease-out);
+}
+
+.back-btn:hover svg { transform: translateX(-3px); }
+
+/* Country header */
+.country-header {
+  padding: 2rem 0 2.5rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 2rem;
+  animation: fadeUp 0.4s var(--ease-out) both;
+}
+
+.country-header .region-tag {
+  font-family: var(--font-heading);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.8rem;
+}
+
+.country-header h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2.8rem, 6vw, 4.5rem);
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 1rem;
+}
+
+.country-header .meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.country-header .meta-row .meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.country-header .meta-row .meta-label {
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 10px;
+}
+
+.country-header .meta-row .meta-value {
+  color: var(--gold-bright);
+}
+
+/* Detail layout */
+.detail-layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 3rem;
+  align-items: start;
+}
+
+/* Sidebar nav */
+.section-nav {
+  position: sticky;
+  top: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  animation: fadeUp 0.5s var(--ease-out) 0.1s both;
+}
+
+.section-nav a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 14px;
+  font-family: var(--font-heading);
+  font-size: 12.5px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  border-radius: 6px;
+  transition: all 0.2s var(--ease-out);
+  text-decoration: none;
+  border-left: 2px solid transparent;
+}
+
+.section-nav a:hover {
+  color: var(--text-primary);
+  background: var(--bg-surface);
+}
+
+.section-nav a.active {
+  color: var(--gold);
+  background: rgba(200, 169, 110, 0.06);
+  border-left-color: var(--gold);
+  font-weight: 500;
+}
+
+.section-nav .nav-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  opacity: 0.6;
+}
+
+/* Content sections */
+.detail-content {
+  min-width: 0;
+}
+
+.data-section {
+  margin-bottom: 2.5rem;
+  animation: fadeUp 0.45s var(--ease-out) both;
+}
+
+.data-section:nth-child(2) { animation-delay: 0.06s; }
+.data-section:nth-child(3) { animation-delay: 0.12s; }
+.data-section:nth-child(4) { animation-delay: 0.18s; }
+.data-section:nth-child(5) { animation-delay: 0.24s; }
+.data-section:nth-child(6) { animation-delay: 0.3s; }
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.section-header .section-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.section-header h2 {
+  font-family: var(--font-heading);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+/* Data fields */
+.data-field {
+  display: grid;
+  grid-template-columns: minmax(180px, 240px) 1fr;
+  gap: 1rem;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-subtle);
+  transition: background 0.2s;
+}
+
+.data-field:last-child { border-bottom: none; }
+
+.data-field:hover {
+  background: rgba(255,255,255,0.01);
+}
+
+.field-label {
+  font-family: var(--font-heading);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  padding-top: 2px;
+}
+
+.field-value {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--text-primary);
+  line-height: 1.6;
+  word-break: break-word;
+}
+
+.field-value .note {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.field-value .stat {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--gold-bright);
+}
+
+/* Nested subsections */
+.subsection {
+  margin: 0.8rem 0;
+  padding-left: 1rem;
+  border-left: 2px solid var(--border-subtle);
+}
+
+.subsection-title {
+  font-family: var(--font-heading);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  letter-spacing: 0.04em;
+  margin-bottom: 6px;
+}
+
+/* Background text (introduction) */
+.intro-text {
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--text-primary);
+  column-count: 2;
+  column-gap: 2rem;
+  padding: 1rem 0;
+}
+
+/* HDI special display */
+.hdi-display {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 1.5rem;
+  background: var(--bg-surface);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.hdi-score {
+  font-family: var(--font-mono);
+  font-size: 2.5rem;
+  font-weight: 500;
+  color: var(--gold-bright);
+  line-height: 1;
+}
+
+.hdi-bar-wrap {
+  flex: 1;
+}
+
+.hdi-bar {
+  height: 6px;
+  background: var(--bg-elevated);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.hdi-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 1s var(--ease-out);
+  background: linear-gradient(90deg, #cc4444, #e8a030, #44aa88);
+}
+
+.hdi-labels {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+/* Loading skeleton */
+.skeleton {
+  animation: shimmer 1.5s infinite;
+  background: linear-gradient(90deg, var(--bg-surface) 25%, var(--bg-elevated) 50%, var(--bg-surface) 75%);
+  background-size: 200% 100%;
+  border-radius: 4px;
+}
+
+.skeleton-line {
+  height: 14px;
+  margin-bottom: 12px;
+  border-radius: 4px;
+}
+
+.skeleton-line:nth-child(odd) { width: 80%; }
+.skeleton-line:nth-child(even) { width: 60%; }
+
+.loading-state {
+  padding: 2rem 0;
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+.site-footer {
+  border-top: 1px solid var(--border-subtle);
+  padding: 2rem;
+  text-align: center;
+}
+
+.site-footer p {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.8;
+}
+
+.site-footer a {
+  color: var(--gold-dim);
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 900px) {
+  .detail-layout {
+    grid-template-columns: 1fr;
+  }
+  .section-nav {
+    position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-subtle);
+    margin-bottom: 1.5rem;
+  }
+  .section-nav a {
+    padding: 6px 10px;
+    font-size: 11px;
+    border-left: none;
+    border-bottom: 2px solid transparent;
+  }
+  .section-nav a.active {
+    border-left: none;
+    border-bottom-color: var(--gold);
+  }
+  .intro-text { column-count: 1; }
+  .data-field {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+  .hero h1 { font-size: 2.8rem; }
+  .country-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .site-header { padding: 0 1rem; }
+  .landing { padding: 2rem 1rem; }
+  .detail-view { padding: 0 1rem 3rem; }
+  .header-meta { display: none; }
+  .country-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+  .hdi-display {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="header-inner">
+    <a class="site-logo" onclick="showLanding()">
+      <div class="logo-seal">WF</div>
+      <div class="logo-text">The World <span>Factbook</span></div>
+    </a>
+    <div class="header-meta">DATA VIA FACTBOOK.JSON / UNDP HDR 2025</div>
+  </div>
+</header>
+
+<!-- LANDING PAGE -->
+<main class="landing" id="landing">
+  <div class="hero">
+    <div class="hero-label">Comprehensive Country Intelligence</div>
+    <h1>The World <em>Factbook</em></h1>
+    <p class="hero-sub">Reference data on 251 countries and territories. Geography, demographics, economics, government, military, and more.</p>
+    <div class="search-wrap">
+      <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input class="search-input" id="searchInput" type="text" placeholder="Search countries..." autocomplete="off" spellcheck="false">
+      <span class="search-count" id="searchCount"></span>
+    </div>
+  </div>
+  <div id="countryList"></div>
+  <div class="no-results" id="noResults">No countries match your search.</div>
+</main>
+
+<!-- DETAIL VIEW -->
+<div class="detail-view" id="detailView">
+  <button class="back-btn" onclick="showLanding()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    All Countries
+  </button>
+  <div id="detailContent"></div>
+</div>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <p>
+    Data sourced from <a href="https://github.com/factbook/factbook.json" target="_blank">factbook.json</a> (CIA World Factbook archive) and <a href="https://hdr.undp.org" target="_blank">UNDP Human Development Report 2025</a>.<br>
+    The CIA World Factbook was retired in February 2026. This site preserves access to the data.
+  </p>
+</footer>
+
+<script>
+/* ============================================
+   COUNTRY MAP: name -> [region, fips_code]
+   ============================================ */
+const COUNTRIES = [
+  // AFRICA (56)
+  ["Algeria","africa","ag"],
+  ["Angola","africa","ao"],
+  ["Benin","africa","bn"],
+  ["Botswana","africa","bc"],
+  ["Burkina Faso","africa","uv"],
+  ["Burundi","africa","by"],
+  ["Cabo Verde","africa","cv"],
+  ["Cameroon","africa","cm"],
+  ["Central African Republic","africa","ct"],
+  ["Chad","africa","cd"],
+  ["Comoros","africa","cn"],
+  ["Congo, DR","africa","cg"],
+  ["Congo, Republic","africa","cf"],
+  ["Cote d'Ivoire","africa","iv"],
+  ["Djibouti","africa","dj"],
+  ["Egypt","africa","eg"],
+  ["Equatorial Guinea","africa","ek"],
+  ["Eritrea","africa","er"],
+  ["Eswatini","africa","wz"],
+  ["Ethiopia","africa","et"],
+  ["Gabon","africa","gb"],
+  ["Gambia, The","africa","ga"],
+  ["Ghana","africa","gh"],
+  ["Guinea","africa","gv"],
+  ["Guinea-Bissau","africa","pu"],
+  ["Kenya","africa","ke"],
+  ["Lesotho","africa","lt"],
+  ["Liberia","africa","li"],
+  ["Libya","africa","ly"],
+  ["Madagascar","africa","ma"],
+  ["Malawi","africa","mi"],
+  ["Mali","africa","ml"],
+  ["Mauritania","africa","mr"],
+  ["Mauritius","africa","mp"],
+  ["Morocco","africa","mo"],
+  ["Mozambique","africa","mz"],
+  ["Namibia","africa","wa"],
+  ["Niger","africa","ng"],
+  ["Nigeria","africa","ni"],
+  ["Rwanda","africa","rw"],
+  ["Saint Helena","africa","sh"],
+  ["Sao Tome and Principe","africa","tp"],
+  ["Senegal","africa","sg"],
+  ["Seychelles","africa","se"],
+  ["Sierra Leone","africa","sl"],
+  ["Somalia","africa","so"],
+  ["South Africa","africa","sf"],
+  ["South Sudan","africa","od"],
+  ["Sudan","africa","su"],
+  ["Tanzania","africa","tz"],
+  ["Togo","africa","to"],
+  ["Tunisia","africa","ts"],
+  ["Uganda","africa","ug"],
+  ["Western Sahara","africa","wi"],
+  ["Zambia","africa","za"],
+  ["Zimbabwe","africa","zi"],
+  // AUSTRALIA & OCEANIA (30)
+  ["American Samoa","australia-oceania","aq"],
+  ["Ashmore and Cartier Islands","australia-oceania","at"],
+  ["Australia","australia-oceania","as"],
+  ["Christmas Island","australia-oceania","kt"],
+  ["Cocos (Keeling) Islands","australia-oceania","ck"],
+  ["Cook Islands","australia-oceania","cw"],
+  ["Coral Sea Islands","australia-oceania","cr"],
+  ["Fiji","australia-oceania","fj"],
+  ["French Polynesia","australia-oceania","fp"],
+  ["Guam","australia-oceania","gq"],
+  ["Kiribati","australia-oceania","kr"],
+  ["Marshall Islands","australia-oceania","rm"],
+  ["Micronesia","australia-oceania","fm"],
+  ["Nauru","australia-oceania","nr"],
+  ["New Caledonia","australia-oceania","nc"],
+  ["New Zealand","australia-oceania","nz"],
+  ["Niue","australia-oceania","ne"],
+  ["Norfolk Island","australia-oceania","nf"],
+  ["Northern Mariana Islands","australia-oceania","cq"],
+  ["Palau","australia-oceania","ps"],
+  ["Pitcairn Islands","australia-oceania","pc"],
+  ["Samoa","australia-oceania","ws"],
+  ["Solomon Islands","australia-oceania","bp"],
+  ["Tokelau","australia-oceania","tl"],
+  ["Tonga","australia-oceania","tn"],
+  ["Tuvalu","australia-oceania","tv"],
+  ["US Pacific Island Wildlife Refuges","australia-oceania","um"],
+  ["Vanuatu","australia-oceania","nh"],
+  ["Wake Island","australia-oceania","wq"],
+  ["Wallis and Futuna","australia-oceania","wf"],
+  // CENTRAL AMERICA & CARIBBEAN (33)
+  ["Anguilla","central-america-n-caribbean","av"],
+  ["Antigua and Barbuda","central-america-n-caribbean","ac"],
+  ["Aruba","central-america-n-caribbean","aa"],
+  ["Bahamas, The","central-america-n-caribbean","bf"],
+  ["Barbados","central-america-n-caribbean","bb"],
+  ["Belize","central-america-n-caribbean","bh"],
+  ["British Virgin Islands","central-america-n-caribbean","vi"],
+  ["Cayman Islands","central-america-n-caribbean","cj"],
+  ["Costa Rica","central-america-n-caribbean","cs"],
+  ["Cuba","central-america-n-caribbean","cu"],
+  ["Curacao","central-america-n-caribbean","uc"],
+  ["Dominica","central-america-n-caribbean","do"],
+  ["Dominican Republic","central-america-n-caribbean","dr"],
+  ["El Salvador","central-america-n-caribbean","es"],
+  ["Grenada","central-america-n-caribbean","gj"],
+  ["Guatemala","central-america-n-caribbean","gt"],
+  ["Haiti","central-america-n-caribbean","ha"],
+  ["Honduras","central-america-n-caribbean","ho"],
+  ["Jamaica","central-america-n-caribbean","jm"],
+  ["Montserrat","central-america-n-caribbean","mh"],
+  ["Navassa Island","central-america-n-caribbean","bq"],
+  ["Nicaragua","central-america-n-caribbean","nu"],
+  ["Panama","central-america-n-caribbean","pm"],
+  ["Puerto Rico","central-america-n-caribbean","rq"],
+  ["Saint Barthelemy","central-america-n-caribbean","tb"],
+  ["Saint Kitts and Nevis","central-america-n-caribbean","sc"],
+  ["Saint Lucia","central-america-n-caribbean","st"],
+  ["Saint Martin","central-america-n-caribbean","rn"],
+  ["Saint Vincent and the Grenadines","central-america-n-caribbean","vc"],
+  ["Sint Maarten","central-america-n-caribbean","nn"],
+  ["Trinidad and Tobago","central-america-n-caribbean","td"],
+  ["Turks and Caicos Islands","central-america-n-caribbean","tk"],
+  ["US Virgin Islands","central-america-n-caribbean","vq"],
+  // CENTRAL ASIA (9)
+  ["Armenia","central-asia","am"],
+  ["Azerbaijan","central-asia","aj"],
+  ["Georgia","central-asia","gg"],
+  ["Kazakhstan","central-asia","kz"],
+  ["Kyrgyzstan","central-asia","kg"],
+  ["Russia","central-asia","rs"],
+  ["Tajikistan","central-asia","ti"],
+  ["Turkmenistan","central-asia","tx"],
+  ["Uzbekistan","central-asia","uz"],
+  // EAST & SOUTHEAST ASIA (22)
+  ["Brunei","east-n-southeast-asia","bx"],
+  ["Burma (Myanmar)","east-n-southeast-asia","bm"],
+  ["Cambodia","east-n-southeast-asia","cb"],
+  ["China","east-n-southeast-asia","ch"],
+  ["Hong Kong","east-n-southeast-asia","hk"],
+  ["Indonesia","east-n-southeast-asia","id"],
+  ["Japan","east-n-southeast-asia","ja"],
+  ["Laos","east-n-southeast-asia","la"],
+  ["Macau","east-n-southeast-asia","mc"],
+  ["Malaysia","east-n-southeast-asia","my"],
+  ["Mongolia","east-n-southeast-asia","mg"],
+  ["North Korea","east-n-southeast-asia","kn"],
+  ["Papua New Guinea","east-n-southeast-asia","pp"],
+  ["Paracel Islands","east-n-southeast-asia","pf"],
+  ["Philippines","east-n-southeast-asia","rp"],
+  ["Singapore","east-n-southeast-asia","sn"],
+  ["South Korea","east-n-southeast-asia","ks"],
+  ["Spratly Islands","east-n-southeast-asia","pg"],
+  ["Taiwan","east-n-southeast-asia","tw"],
+  ["Thailand","east-n-southeast-asia","th"],
+  ["Timor-Leste","east-n-southeast-asia","tt"],
+  ["Vietnam","east-n-southeast-asia","vm"],
+  // EUROPE (55)
+  ["Akrotiri","europe","ax"],
+  ["Albania","europe","al"],
+  ["Andorra","europe","an"],
+  ["Austria","europe","au"],
+  ["Belarus","europe","bo"],
+  ["Belgium","europe","be"],
+  ["Bosnia and Herzegovina","europe","bk"],
+  ["Bulgaria","europe","bu"],
+  ["Croatia","europe","hr"],
+  ["Cyprus","europe","cy"],
+  ["Czechia","europe","ez"],
+  ["Denmark","europe","da"],
+  ["Dhekelia","europe","dx"],
+  ["Estonia","europe","en"],
+  ["European Union","europe","ee"],
+  ["Faroe Islands","europe","fo"],
+  ["Finland","europe","fi"],
+  ["France","europe","fr"],
+  ["Germany","europe","gm"],
+  ["Gibraltar","europe","gi"],
+  ["Greece","europe","gr"],
+  ["Guernsey","europe","gk"],
+  ["Hungary","europe","hu"],
+  ["Iceland","europe","ic"],
+  ["Ireland","europe","ei"],
+  ["Isle of Man","europe","im"],
+  ["Italy","europe","it"],
+  ["Jan Mayen","europe","jn"],
+  ["Jersey","europe","je"],
+  ["Kosovo","europe","kv"],
+  ["Latvia","europe","lg"],
+  ["Liechtenstein","europe","ls"],
+  ["Lithuania","europe","lh"],
+  ["Luxembourg","europe","lu"],
+  ["Malta","europe","mt"],
+  ["Moldova","europe","md"],
+  ["Monaco","europe","mn"],
+  ["Montenegro","europe","mj"],
+  ["Netherlands","europe","nl"],
+  ["North Macedonia","europe","mk"],
+  ["Norway","europe","no"],
+  ["Poland","europe","pl"],
+  ["Portugal","europe","po"],
+  ["Romania","europe","ro"],
+  ["San Marino","europe","sm"],
+  ["Serbia","europe","ri"],
+  ["Slovakia","europe","lo"],
+  ["Slovenia","europe","si"],
+  ["Spain","europe","sp"],
+  ["Svalbard","europe","sv"],
+  ["Sweden","europe","sw"],
+  ["Switzerland","europe","sz"],
+  ["Ukraine","europe","up"],
+  ["United Kingdom","europe","uk"],
+  ["Vatican City","europe","vt"],
+  // MIDDLE EAST (16)
+  ["Bahrain","middle-east","ba"],
+  ["Gaza Strip","middle-east","gz"],
+  ["Iran","middle-east","ir"],
+  ["Iraq","middle-east","iz"],
+  ["Israel","middle-east","is"],
+  ["Jordan","middle-east","jo"],
+  ["Kuwait","middle-east","ku"],
+  ["Lebanon","middle-east","le"],
+  ["Oman","middle-east","mu"],
+  ["Qatar","middle-east","qa"],
+  ["Saudi Arabia","middle-east","sa"],
+  ["Syria","middle-east","sy"],
+  ["Turkey","middle-east","tu"],
+  ["United Arab Emirates","middle-east","ae"],
+  ["West Bank","middle-east","we"],
+  ["Yemen","middle-east","ym"],
+  // NORTH AMERICA (7)
+  ["Bermuda","north-america","bd"],
+  ["Canada","north-america","ca"],
+  ["Clipperton Island","north-america","ip"],
+  ["Greenland","north-america","gl"],
+  ["Mexico","north-america","mx"],
+  ["Saint Pierre and Miquelon","north-america","sb"],
+  ["United States","north-america","us"],
+  // SOUTH AMERICA (14)
+  ["Argentina","south-america","ar"],
+  ["Bolivia","south-america","bl"],
+  ["Brazil","south-america","br"],
+  ["Chile","south-america","ci"],
+  ["Colombia","south-america","co"],
+  ["Ecuador","south-america","ec"],
+  ["Falkland Islands","south-america","fk"],
+  ["Guyana","south-america","gy"],
+  ["Paraguay","south-america","pa"],
+  ["Peru","south-america","pe"],
+  ["South Georgia and South Sandwich Islands","south-america","sx"],
+  ["Suriname","south-america","ns"],
+  ["Uruguay","south-america","uy"],
+  ["Venezuela","south-america","ve"],
+  // SOUTH ASIA (9)
+  ["Afghanistan","south-asia","af"],
+  ["Bangladesh","south-asia","bg"],
+  ["Bhutan","south-asia","bt"],
+  ["British Indian Ocean Territory","south-asia","io"],
+  ["India","south-asia","in"],
+  ["Maldives","south-asia","mv"],
+  ["Nepal","south-asia","np"],
+  ["Pakistan","south-asia","pk"],
+  ["Sri Lanka","south-asia","ce"]
+];
+
+/* ============================================
+   HDI VALUES (UNDP HDR 2025)
+   ============================================ */
+const HDI = {
+  "switzerland":0.967,"norway":0.966,"iceland":0.959,"denmark":0.952,"sweden":0.952,
+  "germany":0.950,"ireland":0.950,"singapore":0.949,"netherlands":0.946,"australia":0.946,
+  "liechtenstein":0.945,"belgium":0.942,"finland":0.942,"united kingdom":0.940,"japan":0.940,
+  "new zealand":0.939,"canada":0.938,"south korea":0.929,"united states":0.927,"austria":0.926,
+  "israel":0.926,"malta":0.918,"luxembourg":0.916,"france":0.914,"slovenia":0.909,
+  "spain":0.911,"italy":0.906,"czechia":0.905,"estonia":0.899,"greece":0.893,
+  "cyprus":0.896,"poland":0.881,"lithuania":0.879,"united arab emirates":0.937,
+  "saudi arabia":0.875,"chile":0.860,"croatia":0.858,"latvia":0.863,"portugal":0.874,
+  "hungary":0.856,"argentina":0.849,"turkey":0.855,"montenegro":0.844,"qatar":0.875,
+  "bahrain":0.888,"romania":0.828,"kuwait":0.847,"russia":0.822,"belarus":0.801,
+  "oman":0.821,"uruguay":0.830,"costa rica":0.806,"panama":0.805,"malaysia":0.807,
+  "georgia":0.814,"serbia":0.805,"thailand":0.803,"albania":0.796,"china":0.788,
+  "mexico":0.781,"brazil":0.760,"colombia":0.758,"ecuador":0.765,"peru":0.762,
+  "ukraine":0.734,"south africa":0.717,"egypt":0.728,"indonesia":0.713,"vietnam":0.726,
+  "philippines":0.710,"bolivia":0.698,"india":0.644,"ghana":0.602,"kenya":0.601,
+  "cambodia":0.600,"bangladesh":0.670,"pakistan":0.544,"nigeria":0.548,"myanmar":0.585,
+  "ethiopia":0.492,"congo, dr":0.479,"afghanistan":0.462,"sudan":0.516,"haiti":0.535,
+  "yemen":0.424,"chad":0.394,"niger":0.394,"south sudan":0.381,
+  "central african republic":0.387,"somalia":0.380,"sierra leone":0.477,"mali":0.410,
+  "burkina faso":0.438,"mozambique":0.461,"madagascar":0.421,"malawi":0.508,
+  "tanzania":0.532,"uganda":0.550,"rwanda":0.548,"senegal":0.517,"nepal":0.601,
+  "iraq":0.686,"iran":0.780,"jordan":0.736,"lebanon":0.723,"jamaica":0.709,
+  "cuba":0.764,"dominican republic":0.766,"guatemala":0.627,"honduras":0.621,
+  "el salvador":0.675,"nicaragua":0.667,"paraguay":0.717,"venezuela":0.699,
+  "libya":0.718,"algeria":0.745,"morocco":0.698,"tunisia":0.740,"botswana":0.693,
+  "namibia":0.610,"zambia":0.565,"zimbabwe":0.550,"angola":0.586,"cameroon":0.576
+};
+
+/* ============================================
+   SECTION CONFIG
+   ============================================ */
+const SECTION_CONFIG = {
+  "Introduction":        { color: "#8b7355", icon: "&#9782;" },
+  "Geography":           { color: "#4a9e6e", icon: "&#9793;" },
+  "People and Society":  { color: "#c27a4a", icon: "&#9823;" },
+  "Environment":         { color: "#4a9e4a", icon: "&#9752;" },
+  "Government":          { color: "#7a5aae", icon: "&#9878;" },
+  "Economy":             { color: "#c8a96e", icon: "&#9733;" },
+  "Energy":              { color: "#e8a030", icon: "&#9889;" },
+  "Communications":      { color: "#4a8eff", icon: "&#9993;" },
+  "Transportation":      { color: "#7a8aaa", icon: "&#9992;" },
+  "Military and Security":{ color: "#cc4444", icon: "&#9764;" },
+  "Space":               { color: "#6a6aee", icon: "&#10038;" },
+  "Terrorism":           { color: "#aa4444", icon: "&#9888;" },
+  "Transnational Issues":{ color: "#aa7744", icon: "&#8853;" },
+  "HDI":                 { color: "#44aa88", icon: "&#9632;" }
+};
+
+const SECTION_ORDER = [
+  "Introduction","Geography","People and Society","Environment","Government",
+  "Economy","Energy","Communications","Transportation","Military and Security",
+  "Space","Terrorism","Transnational Issues"
+];
+
+const REGION_DISPLAY = {
+  "africa": "Africa",
+  "australia-oceania": "Australia & Oceania",
+  "central-america-n-caribbean": "Central America & Caribbean",
+  "central-asia": "Central Asia",
+  "east-n-southeast-asia": "East & Southeast Asia",
+  "europe": "Europe",
+  "middle-east": "Middle East",
+  "north-america": "North America",
+  "south-america": "South America",
+  "south-asia": "South Asia"
+};
+
+const REGION_ORDER = [
+  "africa","australia-oceania","central-america-n-caribbean","central-asia",
+  "east-n-southeast-asia","europe","middle-east","north-america",
+  "south-america","south-asia"
+];
+
+/* ============================================
+   STATE
+   ============================================ */
+const cache = new Map();
+let currentCountry = null;
+
+/* ============================================
+   INIT: BUILD LANDING PAGE
+   ============================================ */
+function buildLanding() {
+  const grouped = {};
+  COUNTRIES.forEach(([name, region, code]) => {
+    if (!grouped[region]) grouped[region] = [];
+    grouped[region].push({ name, region, code });
+  });
+
+  const container = document.getElementById('countryList');
+  let html = '';
+
+  REGION_ORDER.forEach(region => {
+    const countries = grouped[region];
+    if (!countries) return;
+    countries.sort((a, b) => a.name.localeCompare(b.name));
+
+    html += `<div class="region-group" data-region="${region}">`;
+    html += `<div class="region-label">${REGION_DISPLAY[region]} <span class="count">${countries.length}</span></div>`;
+    html += `<div class="country-grid">`;
+    countries.forEach(c => {
+      html += `<div class="country-card" data-name="${c.name.toLowerCase()}" onclick="loadCountry('${c.name}','${c.region}','${c.code}')">`;
+      html += `<span class="name">${c.name}</span>`;
+      html += `<span class="code">${c.code.toUpperCase()}</span>`;
+      html += `</div>`;
+    });
+    html += `</div></div>`;
+  });
+
+  container.innerHTML = html;
+  document.getElementById('searchCount').textContent = `${COUNTRIES.length} countries`;
+}
+
+/* ============================================
+   SEARCH
+   ============================================ */
+let searchTimer;
+document.addEventListener('DOMContentLoaded', () => {
+  buildLanding();
+  handleHash();
+
+  document.getElementById('searchInput').addEventListener('input', (e) => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => filterCountries(e.target.value), 80);
+  });
+});
+
+window.addEventListener('hashchange', handleHash);
+
+function filterCountries(query) {
+  const q = query.toLowerCase().trim();
+  const cards = document.querySelectorAll('.country-card');
+  const groups = document.querySelectorAll('.region-group');
+  let visible = 0;
+
+  cards.forEach(card => {
+    const match = !q || card.dataset.name.includes(q);
+    card.classList.toggle('hidden', !match);
+    if (match) visible++;
+  });
+
+  groups.forEach(group => {
+    const hasVisible = group.querySelector('.country-card:not(.hidden)');
+    group.style.display = hasVisible ? '' : 'none';
+  });
+
+  document.getElementById('searchCount').textContent = q ? `${visible} found` : `${COUNTRIES.length} countries`;
+  document.getElementById('noResults').style.display = visible === 0 && q ? 'block' : 'none';
+}
+
+/* ============================================
+   NAVIGATION
+   ============================================ */
+function showLanding() {
+  document.getElementById('landing').classList.remove('hidden');
+  document.getElementById('detailView').classList.remove('active');
+  history.pushState(null, '', window.location.pathname);
+  currentCountry = null;
+  document.title = 'The World Factbook';
+}
+
+function handleHash() {
+  const hash = window.location.hash;
+  if (hash.startsWith('#country=')) {
+    const slug = hash.slice(9);
+    const entry = COUNTRIES.find(c => slugify(c[0]) === slug);
+    if (entry) loadCountry(entry[0], entry[1], entry[2]);
+  }
+}
+
+function slugify(name) {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+}
+
+/* ============================================
+   LOAD COUNTRY
+   ============================================ */
+async function loadCountry(name, region, code) {
+  currentCountry = { name, region, code };
+  document.title = `${name} - The World Factbook`;
+  history.pushState(null, '', `#country=${slugify(name)}`);
+
+  document.getElementById('landing').classList.add('hidden');
+  const detailView = document.getElementById('detailView');
+  detailView.classList.add('active');
+
+  // Show loading state
+  document.getElementById('detailContent').innerHTML = renderLoading(name, region);
+
+  const cacheKey = `${region}/${code}`;
+  let data;
+
+  if (cache.has(cacheKey)) {
+    data = cache.get(cacheKey);
+  } else {
+    try {
+      const url = `https://raw.githubusercontent.com/factbook/factbook.json/master/${region}/${code}.json`;
+      const resp = await fetch(url);
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      data = await resp.json();
+      cache.set(cacheKey, data);
+    } catch (err) {
+      document.getElementById('detailContent').innerHTML = `
+        <div class="country-header">
+          <div class="region-tag">${REGION_DISPLAY[region] || region}</div>
+          <h1>${name}</h1>
+        </div>
+        <div style="padding:2rem;text-align:center;color:var(--text-muted);">
+          <p style="font-size:1.2rem;margin-bottom:1rem;">Failed to load data</p>
+          <p style="font-family:var(--font-mono);font-size:12px;">${err.message}</p>
+        </div>`;
+      return;
+    }
+  }
+
+  renderCountry(name, region, code, data);
+  window.scrollTo({ top: 0 });
+}
+
+function renderLoading(name, region) {
+  return `
+    <div class="country-header">
+      <div class="region-tag">${REGION_DISPLAY[region] || region}</div>
+      <h1>${name}</h1>
+    </div>
+    <div class="loading-state">
+      ${Array(8).fill('<div class="skeleton skeleton-line"></div>').join('')}
+    </div>`;
+}
+
+/* ============================================
+   RENDER COUNTRY DATA
+   ============================================ */
+function renderCountry(name, region, code, data) {
+  const sections = [];
+
+  SECTION_ORDER.forEach(sectionName => {
+    if (data[sectionName]) {
+      sections.push({ key: sectionName, data: data[sectionName] });
+    }
+  });
+
+  // Extract quick meta
+  const pop = extractQuick(data, "People and Society", "Population", "total");
+  const gdpCap = extractQuick(data, "Economy", "Real GDP per capita");
+  const govType = extractQuick(data, "Government", "Government type");
+
+  const hdiKey = name.toLowerCase().replace(' (myanmar)', '');
+  const hdi = HDI[hdiKey];
+
+  let html = `
+    <div class="country-header">
+      <div class="region-tag">${REGION_DISPLAY[region] || region}</div>
+      <h1>${name}</h1>
+      <div class="meta-row">
+        ${pop ? `<div class="meta-item"><span class="meta-label">Pop</span><span class="meta-value">${truncateText(pop, 40)}</span></div>` : ''}
+        ${gdpCap ? `<div class="meta-item"><span class="meta-label">GDP/Cap</span><span class="meta-value">${truncateText(extractFirstValue(gdpCap), 30)}</span></div>` : ''}
+        ${govType ? `<div class="meta-item"><span class="meta-label">Gov</span><span class="meta-value">${truncateText(extractText(govType), 40)}</span></div>` : ''}
+        ${hdi != null ? `<div class="meta-item"><span class="meta-label">HDI</span><span class="meta-value">${hdi}</span></div>` : ''}
+        <div class="meta-item"><span class="meta-label">Code</span><span class="meta-value">${code.toUpperCase()}</span></div>
+      </div>
+    </div>
+    <div class="detail-layout">
+      <nav class="section-nav" id="sectionNav">
+        ${sections.map(s => {
+          const cfg = SECTION_CONFIG[s.key] || { color: '#888', icon: '&#9679;' };
+          return `<a href="#section-${slugify(s.key)}" onclick="scrollToSection(event,'section-${slugify(s.key)}')">
+            <span class="nav-dot" style="background:${cfg.color}"></span>
+            ${s.key}
+          </a>`;
+        }).join('')}
+        ${hdi != null ? `<a href="#section-hdi" onclick="scrollToSection(event,'section-hdi')">
+          <span class="nav-dot" style="background:${SECTION_CONFIG.HDI.color}"></span>
+          Human Development
+        </a>` : ''}
+      </nav>
+      <div class="detail-content">
+        ${sections.map(s => renderSection(s.key, s.data)).join('')}
+        ${hdi != null ? renderHDI(hdi, name) : ''}
+      </div>
+    </div>`;
+
+  document.getElementById('detailContent').innerHTML = html;
+  setupScrollSpy();
+}
+
+function extractQuick(data, ...path) {
+  let current = data;
+  for (const key of path) {
+    if (!current || typeof current !== 'object') return null;
+    current = current[key];
+  }
+  return current;
+}
+
+function extractFirstValue(obj) {
+  const txt = extractText(obj);
+  // Get first year/value pair
+  const match = txt.match(/\$[\d,.]+\s*(?:trillion|billion|million|thousand)?/i);
+  if (match) return match[0];
+  return txt.split(';')[0].replace(/^[^:]+:\s*/, '').trim();
+}
+
+function truncateText(text, max) {
+  if (!text) return '';
+  const str = typeof text === 'string' ? text : extractText(text);
+  const clean = str.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+  return clean.length > max ? clean.slice(0, max) + '...' : clean;
+}
+
+/* ============================================
+   RENDER SECTION
+   ============================================ */
+function renderSection(sectionName, sectionData) {
+  const cfg = SECTION_CONFIG[sectionName] || { color: '#888', icon: '&#9679;' };
+  const id = `section-${slugify(sectionName)}`;
+
+  let fieldsHtml = '';
+
+  // Special case: Introduction.Background is usually a long text block
+  if (sectionName === 'Introduction' && sectionData.Background) {
+    const bgText = extractText(sectionData.Background);
+    fieldsHtml = `<div class="intro-text">${cleanHtml(bgText)}</div>`;
+  } else {
+    fieldsHtml = renderFields(sectionData, 0);
+  }
+
+  return `
+    <div class="data-section" id="${id}">
+      <div class="section-header">
+        <div class="section-icon" style="background:${cfg.color}22;color:${cfg.color}">${cfg.icon}</div>
+        <h2>${sectionName}</h2>
+      </div>
+      ${fieldsHtml}
+    </div>`;
+}
+
+function renderFields(obj, depth) {
+  if (!obj || typeof obj !== 'object') return '';
+  let html = '';
+
+  for (const [key, value] of Object.entries(obj)) {
+    if (key === 'date' || key === 'country comparison to the world') continue;
+
+    if (isLeaf(value)) {
+      const text = extractText(value);
+      if (text && text !== 'N/A') {
+        html += `
+          <div class="data-field">
+            <div class="field-label">${formatLabel(key)}</div>
+            <div class="field-value">${formatValue(text)}</div>
+          </div>`;
+      }
+    } else if (typeof value === 'object' && !Array.isArray(value)) {
+      // Check if it's a simple {text, note} object
+      if (value.text && Object.keys(value).length <= 3) {
+        let display = cleanHtml(String(value.text));
+        if (value.note) display += `<span class="note">${cleanHtml(String(value.note))}</span>`;
+        html += `
+          <div class="data-field">
+            <div class="field-label">${formatLabel(key)}</div>
+            <div class="field-value">${display}</div>
+          </div>`;
+      } else {
+        // Nested subsection
+        html += `
+          <div class="data-field" style="grid-template-columns:1fr;">
+            <div class="field-label" style="margin-bottom:6px;">${formatLabel(key)}</div>
+            <div class="subsection">${renderFields(value, depth + 1)}</div>
+          </div>`;
+      }
+    }
+  }
+  return html;
+}
+
+function isLeaf(val) {
+  if (val === null || val === undefined) return true;
+  if (typeof val === 'string' || typeof val === 'number' || typeof val === 'boolean') return true;
+  if (typeof val === 'object' && 'text' in val && Object.keys(val).every(k => ['text','note','date','suffix','estimated','country comparison to the world'].includes(k))) return true;
+  return false;
+}
+
+function extractText(obj) {
+  if (obj === null || obj === undefined) return '';
+  if (typeof obj === 'string') return obj;
+  if (typeof obj === 'number' || typeof obj === 'boolean') return String(obj);
+  if (typeof obj === 'object') {
+    if ('text' in obj) return String(obj.text);
+    if (Array.isArray(obj)) return obj.map(extractText).filter(Boolean).join('; ');
+    const parts = [];
+    for (const [k, v] of Object.entries(obj)) {
+      const val = extractText(v);
+      if (val) parts.push(`${formatLabel(k)}: ${val}`);
+    }
+    return parts.join('; ');
+  }
+  return String(obj);
+}
+
+function formatLabel(key) {
+  return key
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, c => c.toUpperCase())
+    .replace(/Gdp/g, 'GDP')
+    .replace(/Hdi/g, 'HDI')
+    .replace(/Hiv/g, 'HIV')
+    .replace(/Usd/g, 'USD')
+    .replace(/Nato/g, 'NATO');
+}
+
+function formatValue(text) {
+  let clean = cleanHtml(text);
+  // Highlight numbers/stats
+  clean = clean.replace(/(\$[\d,.]+\s*(?:trillion|billion|million)?)/gi, '<span class="stat">$1</span>');
+  clean = clean.replace(/([\d.]+%)/g, '<span class="stat">$1</span>');
+  return clean;
+}
+
+function cleanHtml(text) {
+  // Convert <br> to line breaks, strip other HTML tags but keep text
+  return text
+    .replace(/<br\s*\/?>/gi, ' ')
+    .replace(/<b>note:<\/b>\s*/gi, '')
+    .replace(/<strong>note:<\/strong>\s*/gi, '')
+    .replace(/<strong>note\s*\d*:\s*<\/strong>\s*/gi, '')
+    .replace(/<b>note\s*\d*:<\/b>\s*/gi, '')
+    .replace(/<[^>]+>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
+
+/* ============================================
+   RENDER HDI
+   ============================================ */
+function renderHDI(value, name) {
+  const pct = (value * 100).toFixed(1);
+  let tier = 'Low';
+  let tierColor = '#cc4444';
+  if (value >= 0.8) { tier = 'Very High'; tierColor = '#44aa88'; }
+  else if (value >= 0.7) { tier = 'High'; tierColor = '#c8a96e'; }
+  else if (value >= 0.55) { tier = 'Medium'; tierColor = '#e8a030'; }
+
+  return `
+    <div class="data-section" id="section-hdi">
+      <div class="section-header">
+        <div class="section-icon" style="background:${SECTION_CONFIG.HDI.color}22;color:${SECTION_CONFIG.HDI.color}">${SECTION_CONFIG.HDI.icon}</div>
+        <h2>Human Development Index</h2>
+      </div>
+      <div class="hdi-display">
+        <div>
+          <div class="hdi-score">${value}</div>
+          <div style="font-family:var(--font-heading);font-size:12px;color:${tierColor};margin-top:4px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;">${tier}</div>
+        </div>
+        <div class="hdi-bar-wrap">
+          <div class="hdi-bar">
+            <div class="hdi-bar-fill" style="width:${pct}%"></div>
+          </div>
+          <div class="hdi-labels">
+            <span>0.0 Low</span>
+            <span>0.55 Medium</span>
+            <span>0.7 High</span>
+            <span>0.8 Very High</span>
+            <span>1.0</span>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:1rem;">
+        <div class="data-field">
+          <div class="field-label">Source</div>
+          <div class="field-value"><a href="https://hdr.undp.org" target="_blank">UNDP Human Development Report 2025</a></div>
+        </div>
+      </div>
+    </div>`;
+}
+
+/* ============================================
+   SCROLL SPY
+   ============================================ */
+function scrollToSection(e, id) {
+  e.preventDefault();
+  const el = document.getElementById(id);
+  if (el) {
+    const top = el.getBoundingClientRect().top + window.scrollY - 80;
+    window.scrollTo({ top, behavior: 'smooth' });
+  }
+}
+
+function setupScrollSpy() {
+  const sections = document.querySelectorAll('.data-section');
+  const navLinks = document.querySelectorAll('.section-nav a');
+  if (!sections.length || !navLinks.length) return;
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(a => a.classList.remove('active'));
+        const link = document.querySelector(`.section-nav a[href="#${entry.target.id}"]`);
+        if (link) link.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-80px 0px -60% 0px', threshold: 0 });
+
+  sections.forEach(section => observer.observe(section));
+}
+
+/* ============================================
+   KEYBOARD SHORTCUTS
+   ============================================ */
+document.addEventListener('keydown', (e) => {
+  // "/" to focus search
+  if (e.key === '/' && !e.ctrlKey && !e.metaKey && document.activeElement.tagName !== 'INPUT') {
+    e.preventDefault();
+    const input = document.getElementById('searchInput');
+    if (input && !document.getElementById('landing').classList.contains('hidden')) {
+      input.focus();
+    }
+  }
+  // Escape to go back
+  if (e.key === 'Escape') {
+    if (document.activeElement.tagName === 'INPUT') {
+      document.activeElement.blur();
+    } else if (currentCountry) {
+      showLanding();
+    }
+  }
+});
+</script>
+</body>
+</html>
