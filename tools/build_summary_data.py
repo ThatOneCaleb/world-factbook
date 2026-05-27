@@ -329,9 +329,18 @@ def fetch_country(entry):
     phys_text = get_text(safe_get(people, "Physician density"))
     phys_num = extract_number(phys_text, r'[\d.]+')
 
-    # Education spending
-    edu_text = get_text(safe_get(people, "Education expenditures"))
-    edu_num = extract_number(edu_text, r'[\d.]+')
+    # Education spending (try multiple key patterns)
+    edu_num = None
+    edu_obj = safe_get(people, "Education expenditure")
+    if isinstance(edu_obj, dict):
+        for k, v in edu_obj.items():
+            if '% GDP' in k or '% of GDP' in k:
+                edu_text = get_text(v)
+                edu_num = extract_number(edu_text, r'[\d.]+')
+                break
+    if edu_num is None:
+        edu_text = get_text(safe_get(people, "Education expenditures"))
+        edu_num = extract_number(edu_text, r'[\d.]+')
 
     # School life expectancy
     sle_text = get_text(safe_get(people, "School life expectancy (primary to tertiary education)", "total"))
